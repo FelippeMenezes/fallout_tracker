@@ -4,7 +4,8 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "bundle exec rails s -p $PORT -b 0.0.0.0",
+    "startCommand": "sh -c 'bundle exec rails s -p $PORT -b 0.0.0.0'", // <-- LINHA CORRIGIDA
     "releaseCommand": "bundle exec rails db:migrate && bundle exec rails db:seed"
   }
 }
+
