@@ -2,17 +2,12 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-
 development:
   <<: *default
   database: fallout_tracker_development
-
 test:
   <<: *default
   database: fallout_tracker_test
-
 production:
   <<: *default
   url: <%= ENV["DATABASE_URL"] %>
-
-
