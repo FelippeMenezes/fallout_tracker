@@ -1,4 +1,6 @@
 source "https://rubygems.org"
+git_source(:github ) { |repo| "https://github.com/#{repo}.git" }
+
 gem "rails", "~> 7.1.5"
 gem "pg", "~> 1.1"
 gem "puma", ">= 6.0"
@@ -14,6 +16,7 @@ gem "devise"
 gem "simple_form"
 
 group :development, :test do
+  gem "dotenv-rails"
   gem "debug", platforms: [:mri, :windows]
 end
 
