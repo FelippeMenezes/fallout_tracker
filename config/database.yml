@@ -79,6 +79,4 @@ test:
 #
 production:
   <<: *default
-  database: fallout_tracker_production
-  username: fallout_tracker
-  password: <%= ENV["FALLOUT_TRACKER_DATABASE_PASSWORD"] %>
+  url: <%= ENV['DATABASE_URL'] %>
