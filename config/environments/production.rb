@@ -3,7 +3,10 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  config.database_configuration = { "production" => { "url" => ENV["DATABASE_URL"] } } if ENV["DATABASE_URL"]
+  config.force_ssl = true
+  if ENV["DATABASE_URL"]
+    config.database_configuration = { "production" => { "url" => ENV["DATABASE_URL"] } }
+  end
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
