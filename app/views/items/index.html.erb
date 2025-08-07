@@ -1,0 +1,52 @@
+<!-- app/views/items/index.html.erb -->
+<div class="container mt-4">
+  <h1>Fallout Shelter Item Tracker</h1>
+  <p>Gerencie os itens que você possui e os que ainda faltam encontrar.</p>
+
+  <div class="row">
+    <!-- Coluna de Itens Faltantes -->
+    <div class="col-md-6">
+      <h2>Itens Faltantes (<%= @missing_items.count %>)</h2>
+      <% @missing_items.group_by(&:category).each do |category, items_by_cat| %>
+        <h4><%= category %></h4>
+        <% items_by_cat.group_by(&:rarity).each do |rarity, items| %>
+          <h5><%= rarity %></h5>
+          <ul class="list-group mb-3">
+            <% items.each do |item| %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <%= item.name %>
+                <!-- Formulário para marcar como 'possuído' -->
+                <%= form_with(model: item, url: item_path(item), method: :patch) do |f| %>
+                  <%= f.submit "Marcar como Possuído", class: "btn btn-sm btn-success" %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- Coluna de Itens que Você Possui -->
+    <div class="col-md-6">
+      <h2>Itens Possuídos (<%= @owned_items.count %>)</h2>
+       <% @owned_items.group_by(&:category).each do |category, items_by_cat| %>
+        <h4><%= category %></h4>
+        <% items_by_cat.group_by(&:rarity).each do |rarity, items| %>
+          <h5><%= rarity %></h5>
+          <ul class="list-group mb-3">
+            <% items.each do |item| %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <%= item.name %>
+                <!-- Formulário para marcar como 'faltante' -->
+                <%= form_with(model: item, url: item_path(item), method: :patch) do |f| %>
+                  <%= f.submit "Marcar como Faltante", class: "btn btn-sm btn-warning" %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
