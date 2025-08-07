@@ -5,7 +5,7 @@ Rails.application.configure do
 
   config.database_configuration = {
     "production" => {
-      "url" => "COLE_A_SUA_DATABASE_URL_AQUI"
+      "url" => "postgresql://postgres:emFWrxBHsJozsXfVWLlGDnFIFvywtjvO@postgres.railway.internal:5432/railway"
     }
   }
 
