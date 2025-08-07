@@ -4,10 +4,6 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "sh -c 'if [ ! -f tmp/db_migrated.txt ]; then bundle exec rails db:migrate && bundle exec rails db:seed && touch tmp/db_migrated.txt; fi && bundle exec rails s -p 8080 -b 0.0.0.0'",
-    "healthcheckPath": "/up",
-    "healthcheckTimeout": 300,
-    "healthcheckInterval": 15,
-    "healthcheckRetries": 20
+    "startCommand": "bundle exec rails s -p 8080 -b 0.0.0.0"
   }
 }
