@@ -3,11 +3,11 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  config.database_configuration = {
-    "production" => {
-      "url" => "postgresql://postgres:emFWrxBHsJozsXfVWLlGDnFIFvywtjvO@postgres.railway.internal:5432/railway"
-    }
-  }
+  if ENV["DATABASE_URL"]
+    ActiveRecord::Base.configurations = Rails.application.config.database_configuration.merge(
+      "production" => { "url" => ENV["DATABASE_URL"] }
+    )
+  end
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
