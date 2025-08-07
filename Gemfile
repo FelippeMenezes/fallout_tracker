@@ -16,7 +16,6 @@ gem "devise"
 gem "simple_form"
 
 group :development, :test do
-  gem "dotenv-rails"
   gem "debug", platforms: [:mri, :windows]
 end
 

@@ -1,62 +1,36 @@
-# syntax = docker/dockerfile:1
+# Dockerfile
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.1.4
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+# Fase 1: Build
+FROM ruby:3.1.4-slim as build
 
-# Rails app lives here
 WORKDIR /rails
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
-
-
-# Throw-away build stage to reduce size of final image
-FROM base as build
-
-# Install packages needed to build gems
+# Instala dependências do sistema
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config
+    apt-get install --no-install-recommends -y build-essential git libpq-dev
 
-# Install application gems
+# Copia e instala as gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+RUN bundle install --jobs 4 --retry 3 && \
+    rm -rf ~/.bundle/ "/usr/local/bundle"/ruby/*/cache
 
-# Copy application code
+# Copia o resto do código e pré-compila os assets
 COPY . .
+RUN bundle exec rails assets:precompile
 
-# Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+# Fase 2: Produção
+FROM ruby:3.1.4-slim
 
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+WORKDIR /rails
 
-
-# Final stage for app image
-FROM base
-
-# Install packages needed for deployment
+# Instala apenas as dependências de produção
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libvips postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+    apt-get install --no-install-recommends -y postgresql-client
 
-# Copy built artifacts: gems, application
+# Copia as gems e o código da fase de build
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER rails:rails
-
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
-CMD ["./bin/rails", "server"]
+# Expõe a porta e define o comando de início
+EXPOSE 8080
+CMD ["bundle", "exec", "rails", "s", "-p", "8080", "-b", "0.0.0.0"]
