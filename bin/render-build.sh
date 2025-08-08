@@ -16,4 +16,6 @@ bundle exec rails assets:clean
 # Roda as migrações do banco de dados
 bundle exec rails db:migrate
 
+bundle exec rails db:seed
+
 echo "Build finalizado."
