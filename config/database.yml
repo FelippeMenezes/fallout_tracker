@@ -1,13 +1,22 @@
+# 1. Define um "molde" de configuração chamado &default.
+#    Este molde será usado pelas outras seções.
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+# 2. A seção de desenvolvimento usa o molde e adiciona o nome do banco local.
 development:
-  adapter: postgresql
-  encoding: unicode
+  <<: *default
   database: fallout_tracker_development
-  pool: 5
+
+# 3. A seção de teste também usa o molde e define o nome do banco de testes.
 test:
-  adapter: postgresql
-  encoding: unicode
+  <<: *default
   database: fallout_tracker_test
-  pool: 5
+
+# 4. A seção de produção, que o Render usará, também herda do molde.
+#    Mas, em vez de um nome de banco, ela usa a DATABASE_URL que você configurou.
 production:
   <<: *default
   url: <%= ENV["DATABASE_URL"] %>
